@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Report Component should match snapshot 1`] = `
+<div
+  className="col-md-auto"
+>
+  <div
+    className="red card"
+  >
+    <div
+      className="card-body"
+    >
+      <div
+        className="card-title h5"
+      >
+        some report name
+      </div>
+      <p
+        className="card-text"
+      >
+        some description
+      </p>
+    </div>
+  </div>
+</div>
+`;
