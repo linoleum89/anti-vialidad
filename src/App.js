@@ -45,40 +45,8 @@ class App extends Component {
         coordinates: [],
         sector: ""
       },
-      sectors: [
-        { id: "1", name: "San Felipe", className: 'red' },
-        { id: "2", name: "Fuentes Mares", className: 'blue' }
-      ],
-      entries: [
-        {
-          id: 1,
-          name: "Reten en la cantera",
-          description: "De norte a sur",
-          coordinates: [],
-          sector: 1
-        },
-        {
-          id: 2,
-          name: "Reten en la independencia",
-          description: "De sur a norte antes de la deza y ulloa",
-          coordinates: [200,300],
-          sector: 1
-        },
-        {
-          id: 3,
-          name: "Policía cazando en la fuentes mares",
-          description: "Pasando el Soriana",
-          coordinates: [],
-          sector: 2
-        },
-        {
-          id: 4,
-          name: "Policía esconcido atrás de avalos",
-          description: "Pasando el Soriana",
-          coordinates: [],
-          sector: 0
-        }
-      ]
+      sectors: [],
+      entries: []
     };
   }
 
@@ -91,6 +59,45 @@ class App extends Component {
         });
       }
     });
+    //simulating some api fetch retriveing sectors and entries
+    setTimeout(() => {
+      this.setState({
+        sectors: [
+          { id: "1", name: "San Felipe", className: 'red' },
+          { id: "2", name: "Fuentes Mares", className: 'blue' }
+        ],
+        entries: [
+          {
+            id: 1,
+            name: "Reten en la cantera",
+            description: "De norte a sur",
+            coordinates: [],
+            sector: 1
+          },
+          {
+            id: 2,
+            name: "Reten en la independencia",
+            description: "De sur a norte antes de la deza y ulloa",
+            coordinates: [200,300],
+            sector: 1
+          },
+          {
+            id: 3,
+            name: "Policía cazando en la fuentes mares",
+            description: "Pasando el Soriana",
+            coordinates: [],
+            sector: 2
+          },
+          {
+            id: 4,
+            name: "Policía esconcido atrás de avalos",
+            description: "Pasando el Soriana",
+            coordinates: [],
+            sector: 0
+          }
+        ]
+      });
+    }, 1000);
   }
 
   componentWillUnmount() {
@@ -210,7 +217,7 @@ class App extends Component {
             </Button>
           </ButtonGroup>
         </Navbar>
-        <Row className="margin-top">{(entries && entries.length > 0) ? entries : <h1>There is no data to display</h1>}</Row>
+        <Row className="margin-top">{(entries && entries.length > 0) ? entries : <h1>Loading...</h1>}</Row>
         <PreferencesContext.Provider
           value={{
             allowNotifications: this.state.allowNotifications,
