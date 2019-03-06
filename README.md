@@ -1,6 +1,6 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## About Anti-Vialidad
 
 Anti-Vialidad it's an idea of a mobile app that allows you to publish reports about police checkpoints, you can subscribe to sectors and receive push notifications when a new report it's published and you're subscribed to it, additionally there is an idea to add some map and save the coordinates for more visual looking of the police checkpoint. Sectors can be distinguished with colors and there is a preferences menu where you can turn on/off notifications, change your current sector and change color scheme.
 
