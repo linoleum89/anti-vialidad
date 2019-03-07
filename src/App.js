@@ -1,29 +1,25 @@
 import React, { Component } from "react";
-import "./App.css";
-import {
-  Button,
-  Container,
-  Row,
-  Navbar,
-  ButtonGroup
-} from "react-bootstrap";
+import "./css/App.css";
+import { Button, Container, Row, Navbar, ButtonGroup } from "react-bootstrap";
+import Login from "./components/Login";
 import Preferences from "./components/Preferences";
-import Report from './components/Report';
+import Report from "./components/Report";
 import ReportForm from "./components/ReportForm";
 import WithModal from "./components/WithModal";
 import PreferencesContext from "./preferences-context";
-
+import { login } from "./utils/utils";
 
 const WithModalPreferences = WithModal(Preferences);
 const WithModalReport = WithModal(ReportForm);
 
 class App extends Component {
   _isMounted = false;
-  constructor(props, context) {
-    super(props, context);
+  constructor(...args) {
+    super(...args);
 
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleSubmitLogin = this.handleSubmitLogin.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSubmitPreferences = this.handleSubmitPreferences.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -33,12 +29,10 @@ class App extends Component {
     this.state = {
       allowNotifications: false,
       show: false,
+      isValidLogin: null,
       isFormValid: false,
       currentModal: "",
-      user: {
-        id:'linoleum89',
-        sector: 1
-      },
+      user: {},
       entry: {
         name: "",
         description: "",
@@ -52,7 +46,7 @@ class App extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    global.Notification.requestPermission().then((permission = '') => {
+    global.Notification.requestPermission().then((permission = "") => {
       if (this._isMounted) {
         this.setState({
           allowNotifications: permission === "granted"
@@ -63,8 +57,8 @@ class App extends Component {
     setTimeout(() => {
       this.setState({
         sectors: [
-          { id: "1", name: "San Felipe", className: 'red' },
-          { id: "2", name: "Fuentes Mares", className: 'blue' }
+          { id: "1", name: "San Felipe", className: "red" },
+          { id: "2", name: "Fuentes Mares", className: "blue" }
         ],
         entries: [
           {
@@ -78,7 +72,7 @@ class App extends Component {
             id: 2,
             name: "Reten en la independencia",
             description: "De sur a norte antes de la deza y ulloa",
-            coordinates: [200,300],
+            coordinates: [200, 300],
             sector: 1
           },
           {
@@ -102,6 +96,15 @@ class App extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  async handleSubmitLogin(userData = {}) {
+    //send userData to api login service, simulating call here
+    const user = (await login(userData)) || "";
+    this.setState({
+      isValidLogin: typeof user === "object",
+      user: user && typeof user !== "string" ? user : {}
+    });
   }
 
   handleNotifications(ev) {
@@ -187,24 +190,29 @@ class App extends Component {
         state.entry = { ...this.state.entry, description: value };
         break;
       case "sector":
-        state.entry = { ...this.state.entry, sector: value || '' };
+        state.entry = { ...this.state.entry, sector: value || "" };
         break;
       default:
         return this.state;
     }
 
-    state.isFormValid = state.entry.name !== '' && state.entry.description !== '';
+    state.isFormValid =
+      state.entry.name !== "" && state.entry.description !== "";
 
     this.setState(state);
   }
 
   render() {
     const entries = this.getEntries(this.state.entries, this.state.sectors);
-
     return (
       <Container fluid={true}>
         <Navbar fixed="top" bg="dark" variant="dark">
-          <Navbar.Brand href="#home">Anti-Vialidad | Welcome {this.state.user.id}</Navbar.Brand>
+          <Navbar.Brand href="#home">
+            Anti-Vialidad{" "}
+            {this.state.user &&
+              this.state.user.id &&
+              `| Welcome ${this.state.user.id}`}
+          </Navbar.Brand>
           <ButtonGroup>
             <Button variant="info" name="sectors" onClick={this.handleShow}>
               Sectors
@@ -217,7 +225,10 @@ class App extends Component {
             </Button>
           </ButtonGroup>
         </Navbar>
-        <Row className="margin-top">{(entries && entries.length > 0) ? entries : <h1>Loading...</h1>}</Row>
+        {/* <Row className="margin-top">{(entries && entries.length > 0) ? entries : <h1>Loading...</h1>}</Row> */}
+        <Row className="margin-top">
+          <Login handleSubmitLogin={this.handleSubmitLogin} isValidLogin={this.state.isValidLogin} />
+        </Row>
         <PreferencesContext.Provider
           value={{
             allowNotifications: this.state.allowNotifications,
@@ -251,18 +262,25 @@ class App extends Component {
     );
   }
 
-  getEntries(entries = [], sectors = []) {
-    return entries && entries.map(entry => {
-      const sector = sectors.find((sector) => {
-        return parseInt(sector.id) === entry.sector
-      });
-
-      entry.className = (sector && sector.className) || '';
-
-      return (
-        <Report key={entry.name} {...entry}></Report>
-      );
+  isLogged() {
+    this.setState({
+      isLogged: this.state.user && this.state.user.id
     });
+  }
+
+  getEntries(entries = [], sectors = []) {
+    return (
+      entries &&
+      entries.map(entry => {
+        const sector = sectors.find(sector => {
+          return parseInt(sector.id) === entry.sector;
+        });
+
+        entry.className = (sector && sector.className) || "";
+
+        return <Report key={entry.name} {...entry} />;
+      })
+    );
   }
 }
 
