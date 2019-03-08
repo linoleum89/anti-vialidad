@@ -210,8 +210,8 @@ class App extends Component {
           <Navbar.Brand href="#home">
             Anti-Vialidad{" "}
             {this.state.user &&
-              this.state.user.id &&
-              `| Welcome ${this.state.user.id}`}
+              this.state.user.userName &&
+              `| Welcome ${this.state.user.userName}`}
           </Navbar.Brand>
           <ButtonGroup>
             <Button variant="info" name="sectors" onClick={this.handleShow}>

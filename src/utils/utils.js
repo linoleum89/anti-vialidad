@@ -6,7 +6,7 @@ export const login = async (userData = {userName: '', password: ''}) => {
         const users = (response.data && response.data.users) || [];
         //simulating find method on the server side, response should return the user object only
         const user = users.find((user) => {
-            return user.username === userData.userName && user.password === userData.password
+            return user.userName === userData.userName && user.password === userData.password
         });
         if (user) {
             delete user.password; //normally we won't have to do this since user object returns without password from api
