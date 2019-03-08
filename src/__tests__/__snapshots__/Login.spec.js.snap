@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login Component should match snapshot 1`] = `
+<form
+  className="login-form"
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <h1>
+    Login
+  </h1>
+  <div
+    className="form-group"
+  >
+    <label
+      className="form-label"
+      htmlFor="userName"
+    >
+      Username
+    </label>
+    <input
+      className="form-control"
+      id="userName"
+      onChange={[Function]}
+      placeholder="Username"
+      required={true}
+      type="text"
+    />
+    <div
+      className="valid-feedback"
+    >
+      Looks good!
+    </div>
+  </div>
+  <div
+    className="form-group"
+  >
+    <label
+      className="form-label"
+      htmlFor="password"
+    >
+      Password
+    </label>
+    <input
+      className="form-control"
+      id="password"
+      onChange={[Function]}
+      placeholder="Password"
+      required={true}
+      type="password"
+    />
+    <div
+      className="valid-feedback"
+    >
+      Looks good!
+    </div>
+  </div>
+  <h3>
+    Invalid user
+  </h3>
+  <button
+    className="btn btn-primary"
+    disabled={false}
+    type="submit"
+  >
+    Submit form
+  </button>
+</form>
+`;
