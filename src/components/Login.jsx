@@ -1,4 +1,5 @@
 import React from "react";
+import { Redirect } from 'react-router'
 import { Form, Button } from "react-bootstrap";
 import "../css/Login.css";
 
@@ -37,6 +38,11 @@ class Login extends React.Component {
   render() {
     const { validated } = this.state;
     const {isValidLogin} = this.props;
+
+    if (isValidLogin) {
+      return <Redirect to='/dashboard' />
+    }
+
     return (
       <Form
         noValidate
