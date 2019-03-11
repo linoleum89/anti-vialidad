@@ -1,7 +1,7 @@
 import React from "react";
 import { Form } from "react-bootstrap";
 import PreferencesContext from "../preferences-context";
-import '../component-custom-switch.min.css';
+import '../css/component-custom-switch.min.css';
 
 const Preferences = props => {
     const sectors = props.sectors && props.sectors.map((sector) => {

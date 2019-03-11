@@ -1,0 +1,9 @@
+.login-form  {
+    border-radius: 10px;
+    background: #FFF;
+    margin: auto;
+    padding: 10px;
+    width: 50%;
+    max-width: 600px;
+    min-width: 320px;
+}
