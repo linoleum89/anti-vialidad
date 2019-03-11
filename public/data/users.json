@@ -1,0 +1,13 @@
+{"users": [{
+    "userName": "linoleum89",
+    "password": "linoleum",
+    "sector": 1
+}, {
+    "userName": "splinter",
+    "password": "a1234nv",
+    "sector": 2
+}, {
+    "userName": "some_user_89",
+    "password": "asdfw23",
+    "sector": 0
+}]}

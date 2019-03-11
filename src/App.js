@@ -1,107 +1,81 @@
 import React, { Component } from "react";
-import "./App.css";
-import {
-  Button,
-  Container,
-  Row,
-  Navbar,
-  ButtonGroup
-} from "react-bootstrap";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import "./css/App.css";
+import { Button, Container, Row, Navbar, ButtonGroup } from "react-bootstrap";
+import Login from "./components/Login";
 import Preferences from "./components/Preferences";
-import Report from './components/Report';
 import ReportForm from "./components/ReportForm";
+import Dashboard from "./components/Dashboard";
+import Loader from "./components/Loader";
 import WithModal from "./components/WithModal";
 import PreferencesContext from "./preferences-context";
-
+import { login } from "./utils/utils";
 
 const WithModalPreferences = WithModal(Preferences);
 const WithModalReport = WithModal(ReportForm);
 
 class App extends Component {
   _isMounted = false;
-  constructor(props, context) {
-    super(props, context);
+  constructor(...args) {
+    super(...args);
 
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleSubmitLogin = this.handleSubmitLogin.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSubmitPreferences = this.handleSubmitPreferences.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleNotifications = this.handleNotifications.bind(this);
     this.handleSector = this.handleSector.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
 
     this.state = {
+      isLoading: false,
       allowNotifications: false,
       show: false,
+      isValidLogin: null,
       isFormValid: false,
       currentModal: "",
-      user: {
-        id:'linoleum89',
-        sector: 1
-      },
+      user: {},
       entry: {
         name: "",
         description: "",
         coordinates: [],
         sector: ""
-      },
-      sectors: [],
-      entries: []
+      }
     };
   }
 
   componentDidMount() {
     this._isMounted = true;
-    global.Notification.requestPermission().then((permission = '') => {
+    global.Notification.requestPermission().then((permission = "") => {
       if (this._isMounted) {
         this.setState({
           allowNotifications: permission === "granted"
         });
       }
     });
-    //simulating some api fetch retriveing sectors and entries
-    setTimeout(() => {
-      this.setState({
-        sectors: [
-          { id: "1", name: "San Felipe", className: 'red' },
-          { id: "2", name: "Fuentes Mares", className: 'blue' }
-        ],
-        entries: [
-          {
-            id: 1,
-            name: "Reten en la cantera",
-            description: "De norte a sur",
-            coordinates: [],
-            sector: 1
-          },
-          {
-            id: 2,
-            name: "Reten en la independencia",
-            description: "De sur a norte antes de la deza y ulloa",
-            coordinates: [200,300],
-            sector: 1
-          },
-          {
-            id: 3,
-            name: "Policía cazando en la fuentes mares",
-            description: "Pasando el Soriana",
-            coordinates: [],
-            sector: 2
-          },
-          {
-            id: 4,
-            name: "Policía esconcido atrás de avalos",
-            description: "Pasando el Soriana",
-            coordinates: [],
-            sector: 0
-          }
-        ]
-      });
-    }, 1000);
   }
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  handleSubmitLogin(userData = {}) {
+    //send userData to api login service, simulating call here
+    this.setState(() => {
+      return {
+        isLoading: true
+      };
+    });
+    setTimeout(async () => {
+      const user = (await login(userData)) || "";
+      this.setState({
+        isValidLogin: typeof user === "object",
+        user: user && typeof user !== "string" ? user : {},
+        isLoading: false
+      });
+    }, 1000);
   }
 
   handleNotifications(ev) {
@@ -187,81 +161,131 @@ class App extends Component {
         state.entry = { ...this.state.entry, description: value };
         break;
       case "sector":
-        state.entry = { ...this.state.entry, sector: value || '' };
+        state.entry = { ...this.state.entry, sector: value || "" };
         break;
       default:
         return this.state;
     }
 
-    state.isFormValid = state.entry.name !== '' && state.entry.description !== '';
+    state.isFormValid =
+      state.entry.name !== "" && state.entry.description !== "";
 
     this.setState(state);
   }
 
+  handleLogout() {
+    this.setState({
+      allowNotifications: false,
+      show: false,
+      isValidLogin: null,
+      isFormValid: false,
+      currentModal: "",
+      user: {},
+      entry: {
+        name: "",
+        description: "",
+        coordinates: [],
+        sector: ""
+      }
+    });
+  }
+
   render() {
-    const entries = this.getEntries(this.state.entries, this.state.sectors);
-
     return (
-      <Container fluid={true}>
-        <Navbar fixed="top" bg="dark" variant="dark">
-          <Navbar.Brand href="#home">Anti-Vialidad | Welcome {this.state.user.id}</Navbar.Brand>
-          <ButtonGroup>
-            <Button variant="info" name="sectors" onClick={this.handleShow}>
-              Sectors
-            </Button>
-            <Button variant="danger" name="report" onClick={this.handleShow}>
-              Report
-            </Button>
-            <Button variant="primary" name="pref" onClick={this.handleShow}>
-              Preferences
-            </Button>
-          </ButtonGroup>
-        </Navbar>
-        <Row className="margin-top">{(entries && entries.length > 0) ? entries : <h1>Loading...</h1>}</Row>
-        <PreferencesContext.Provider
-          value={{
-            allowNotifications: this.state.allowNotifications,
-            handleNotifications: this.handleNotifications,
-            handleSector: this.handleSector,
-            sector: this.state.user.sector
-          }}
-        >
-          <WithModalPreferences
-            isOpen={this.state.show && this.state.currentModal === "pref"}
-            handleClose={this.handleClose}
-            title="Preferences"
-            sectors={this.state.sectors}
-            isFormValid={true}
-            handleSubmit={this.handleSubmitPreferences}
-          />
-        </PreferencesContext.Provider>
+      <Router>
+        <Container fluid={true}>
+          <Navbar fixed="top" bg="dark" variant="dark">
+            <Navbar.Brand href="#home">
+              Anti-Vialidad{" "}
+              {this.state.user &&
+                this.state.user.userName &&
+                `| Welcome ${this.state.user.userName}`}
+            </Navbar.Brand>
+            {this.state.user && this.state.user.userName && (
+              <ButtonGroup>
+                <Button variant="info" name="sectors" onClick={this.handleShow}>
+                  Sectors
+                </Button>
+                <Button
+                  variant="danger"
+                  name="report"
+                  onClick={this.handleShow}
+                >
+                  Report
+                </Button>
+                <Button variant="primary" name="pref" onClick={this.handleShow}>
+                  Preferences
+                </Button>
+                <Button variant="light" onClick={this.handleLogout}>
+                  Logout
+                </Button>
+              </ButtonGroup>
+            )}
+          </Navbar>
+          <Row className="margin-top">
+            <Route
+              path="/"
+              exact
+              component={() => (
+                <Login
+                  handleSubmitLogin={this.handleSubmitLogin}
+                  isValidLogin={this.state.isValidLogin}
+                />
+              )}
+            />
+            {this.state.isLoading ? (
+              <Loader>
+                <div className="overlay">
+                  <h1>Login...</h1>
+                </div>
+              </Loader>
+            ) : (
+              <Route
+                path="/dashboard"
+                component={() => (
+                  <Dashboard isValidLogin={this.state.isValidLogin} />
+                )}
+              />
+            )}
+          </Row>
+          <PreferencesContext.Provider
+            value={{
+              allowNotifications: this.state.allowNotifications,
+              handleNotifications: this.handleNotifications,
+              handleSector: this.handleSector,
+              sector: this.state.user.sector
+            }}
+          >
+            <WithModalPreferences
+              isOpen={this.state.show && this.state.currentModal === "pref"}
+              handleClose={this.handleClose}
+              title="Preferences"
+              sectors={this.state.sectors}
+              isFormValid={true}
+              handleSubmit={this.handleSubmitPreferences}
+            />
+          </PreferencesContext.Provider>
 
-        <WithModalReport
-          isOpen={this.state.show && this.state.currentModal === "report"}
-          handleClose={this.handleClose}
-          title="Report"
-          isFormValid={this.state.isFormValid}
-          handleSubmit={this.handleSubmit}
-          handleChange={this.handleChange}
-          entry={this.state.entry}
-          sectors={this.state.sectors}
-        />
-        {this.props.children}
-      </Container>
+          <WithModalReport
+            isOpen={this.state.show && this.state.currentModal === "report"}
+            handleClose={this.handleClose}
+            title="Report"
+            isFormValid={this.state.isFormValid}
+            handleSubmit={this.handleSubmit}
+            handleChange={this.handleChange}
+            entry={this.state.entry}
+            sectors={this.state.sectors}
+          />
+
+          {this.props.children}
+        </Container>
+      </Router>
     );
   }
 
-  getEntries(entries = [], sectors = []) {
-    return entries && entries.map(entry => {
-      const sector = sectors.find((sector) => {
-        return parseInt(sector.id) === entry.sector
-      });
-
-      entry.className = (sector && sector.className) || '';
-
-      return (
-        <Report key={entry.name} {...entry}></Report>
-      );
+  isLogged() {
+    this.setState({
+      isLogged: this.state.user && this.state.user.id
     });
   }
 }

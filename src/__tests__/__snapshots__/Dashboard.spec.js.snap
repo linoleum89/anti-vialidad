@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dashboard Component should match snapshot 1`] = `
+<div
+  className="overlay"
+>
+  <h1>
+    Loading reports...
+  </h1>
+</div>
+`;
