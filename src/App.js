@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import Preferences from "./components/Preferences";
 import ReportForm from "./components/ReportForm";
 import Dashboard from "./components/Dashboard";
+import Loader from "./components/Loader";
 import WithModal from "./components/WithModal";
 import PreferencesContext from "./preferences-context";
 import { login } from "./utils/utils";
@@ -29,6 +30,7 @@ class App extends Component {
     this.handleLogout = this.handleLogout.bind(this);
 
     this.state = {
+      isLoading: false,
       allowNotifications: false,
       show: false,
       isValidLogin: null,
@@ -59,13 +61,21 @@ class App extends Component {
     this._isMounted = false;
   }
 
-  async handleSubmitLogin(userData = {}) {
+  handleSubmitLogin(userData = {}) {
     //send userData to api login service, simulating call here
-    const user = (await login(userData)) || "";
-    this.setState({
-      isValidLogin: typeof user === "object",
-      user: user && typeof user !== "string" ? user : {}
+    this.setState(() => {
+      return {
+        isLoading: true
+      };
     });
+    setTimeout(async () => {
+      const user = (await login(userData)) || "";
+      this.setState({
+        isValidLogin: typeof user === "object",
+        user: user && typeof user !== "string" ? user : {},
+        isLoading: false
+      });
+    }, 1000);
   }
 
   handleNotifications(ev) {
@@ -223,12 +233,20 @@ class App extends Component {
                 />
               )}
             />
-            <Route
-              path="/dashboard"
-              component={() => (
-                <Dashboard isValidLogin={this.state.isValidLogin} />
-              )}
-            />
+            {this.state.isLoading ? (
+              <Loader>
+                <div className="overlay">
+                  <h1>Login...</h1>
+                </div>
+              </Loader>
+            ) : (
+              <Route
+                path="/dashboard"
+                component={() => (
+                  <Dashboard isValidLogin={this.state.isValidLogin} />
+                )}
+              />
+            )}
           </Row>
           <PreferencesContext.Provider
             value={{

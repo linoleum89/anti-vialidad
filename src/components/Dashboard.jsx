@@ -2,6 +2,7 @@ import React from "react";
 import { Redirect } from "react-router-dom";
 import { fetch_reports, fetch_sectors } from "../utils/utils";
 import Report from "../components/Report";
+import Loader from "../components/Loader";
 
 class Dashboard extends React.Component {
   constructor(...args) {
@@ -26,10 +27,19 @@ class Dashboard extends React.Component {
   render() {
     const { isValidLogin } = this.props;
     const reports = this.parseReports(this.state.reports, this.state.sectors);
+
     if (!isValidLogin) {
       return <Redirect to="/" />;
     }
-    return reports && reports.length > 0 ? reports : <h1>Loading...</h1>;
+    return reports && reports.length > 0 ? (
+      reports
+    ) : (
+      <Loader>
+        <div className="overlay">
+          <h1>Loading reports...</h1>
+        </div>
+      </Loader>
+    );
   }
 
   parseReports(reports = [], sectors = []) {
