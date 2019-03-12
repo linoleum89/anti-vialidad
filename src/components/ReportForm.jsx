@@ -54,4 +54,8 @@ const Report = props => {
   );
 };
 
+Report.defaultProps = {
+  sectors: []
+}
+
 export default Report;

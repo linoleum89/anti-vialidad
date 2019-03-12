@@ -1,6 +1,6 @@
 import React from "react";
 import { Form } from "react-bootstrap";
-import PreferencesContext from "../preferences-context";
+import DataContext from "../data-context";
 import '../css/component-custom-switch.min.css';
 
 const Preferences = props => {
@@ -8,7 +8,7 @@ const Preferences = props => {
         return (<option key={sector.name} value={sector.id}>{sector.name}</option>);
     });
   return (
-    <PreferencesContext.Consumer>
+    <DataContext.Consumer>
       {context => (
         <React.Fragment>
           <Form.Group controlId="formBasicEmail">
@@ -41,7 +41,7 @@ const Preferences = props => {
           </Form.Group>
         </React.Fragment>
       )}
-    </PreferencesContext.Consumer>
+    </DataContext.Consumer>
   );
 };
 

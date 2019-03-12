@@ -8,7 +8,7 @@ import ReportForm from "./components/ReportForm";
 import Dashboard from "./components/Dashboard";
 import Loader from "./components/Loader";
 import WithModal from "./components/WithModal";
-import PreferencesContext from "./preferences-context";
+import DataContext from "./data-context";
 import { login } from "./utils/utils";
 
 const WithModalPreferences = WithModal(Preferences);
@@ -19,15 +19,7 @@ class App extends Component {
   constructor(...args) {
     super(...args);
 
-    this.handleShow = this.handleShow.bind(this);
-    this.handleClose = this.handleClose.bind(this);
-    this.handleSubmitLogin = this.handleSubmitLogin.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleSubmitPreferences = this.handleSubmitPreferences.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleNotifications = this.handleNotifications.bind(this);
-    this.handleSector = this.handleSector.bind(this);
-    this.handleLogout = this.handleLogout.bind(this);
+    this.setBindings(this);
 
     this.state = {
       isLoading: false,
@@ -59,6 +51,19 @@ class App extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  setBindings(_this) {
+    this.handleShow = this.handleShow.bind(_this);
+    this.handleClose = this.handleClose.bind(_this);
+    this.handleSubmitLogin = this.handleSubmitLogin.bind(_this);
+    this.handleSubmit = this.handleSubmit.bind(_this);
+    this.handleSubmitPreferences = this.handleSubmitPreferences.bind(_this);
+    this.handleChange = this.handleChange.bind(_this);
+    this.handleNotifications = this.handleNotifications.bind(_this);
+    this.handleSector = this.handleSector.bind(_this);
+    this.handleLogout = this.handleLogout.bind(_this);
+    this.getData = this.getData.bind(_this);
   }
 
   handleSubmitLogin(userData = {}) {
@@ -190,6 +195,11 @@ class App extends Component {
     });
   }
 
+  getData({sectors = [], reports = []}) {
+    this.context.sectors = sectors;
+    this.context.reports = reports;
+  }
+
   render() {
     return (
       <Router>
@@ -243,12 +253,16 @@ class App extends Component {
               <Route
                 path="/dashboard"
                 component={() => (
-                  <Dashboard isValidLogin={this.state.isValidLogin} />
+                  <DataContext.Provider
+                    value={{ getData: this.getData }}
+                  >
+                    <Dashboard data={{sectors: this.context.sectors, reports: this.context.reports }} isValidLogin={this.state.isValidLogin} />
+                  </DataContext.Provider>
                 )}
               />
             )}
           </Row>
-          <PreferencesContext.Provider
+          <DataContext.Provider
             value={{
               allowNotifications: this.state.allowNotifications,
               handleNotifications: this.handleNotifications,
@@ -264,7 +278,7 @@ class App extends Component {
               isFormValid={true}
               handleSubmit={this.handleSubmitPreferences}
             />
-          </PreferencesContext.Provider>
+          </DataContext.Provider>
 
           <WithModalReport
             isOpen={this.state.show && this.state.currentModal === "report"}
@@ -274,7 +288,7 @@ class App extends Component {
             handleSubmit={this.handleSubmit}
             handleChange={this.handleChange}
             entry={this.state.entry}
-            sectors={this.state.sectors}
+            sectors={this.context.sectors}
           />
 
           {this.props.children}
@@ -290,6 +304,6 @@ class App extends Component {
   }
 }
 
-App.contextType = PreferencesContext;
+App.contextType = DataContext;
 
 export default App;
