@@ -30,8 +30,8 @@ class Dashboard extends React.Component {
     if (!isValidLogin) {
       return <Redirect to="/" />;
     }
-    console.log(data);
-    if (data.reports.length > 0 && data.sectors.length > 0) {
+
+    if ((data.reports && data.reports.length > 0) && (data.sectors && data.sectors.length > 0)) {
         const reports = this.parseReports(data.reports, data.sectors) || [];
         return reports;
     }
